@@ -35,7 +35,7 @@ base class Weather {
       cityName: json['location']['name'],
       temperature: json['current']['temp_c'],
       condition: json['current']['condition']['text'],
-      icon: json['current']['condition']['icon'], // Убираем префикс "file://"
+      icon: json['current']['condition']['icon'],
       windSpeed: json['current']['wind_kph'],
     );
   }

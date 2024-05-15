@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../data/models/weather.dart';
 import '../../domain/weather_interactor.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 class WeatherPage extends StatefulWidget {
   final WeatherInteractor weatherInteractor;
 
-  const WeatherPage({super.key, required this.weatherInteractor});
+  const WeatherPage({Key? key, required this.weatherInteractor}) : super(key: key);
 
   @override
   _WeatherPageState createState() => _WeatherPageState();
@@ -15,6 +14,7 @@ class WeatherPage extends StatefulWidget {
 class _WeatherPageState extends State<WeatherPage> {
   late Future<Weather> _weather;
   String _weatherIconUrl = 'https://';
+  final TextEditingController _cityController = TextEditingController();
 
   @override
   void initState() {
@@ -39,15 +39,47 @@ class _WeatherPageState extends State<WeatherPage> {
             } else {
               final weather = snapshot.data!;
               _weatherIconUrl = 'https://${weather.icon.substring(2)}';
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('City: ${weather.cityName}'),
-                  Text('Temperature: ${weather.temperature}°C'),
-                  Text('Condition: ${weather.condition}'),
-                 Image.network(_weatherIconUrl),
-                  Text('Wind Speed: ${weather.windSpeed} kph'),
-                ],
+              return Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'City: ${weather.cityName}',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    Text(
+                      'Temperature: ${weather.temperature}°C',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    Text(
+                      'Condition: ${weather.condition}',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    Image.network(_weatherIconUrl),
+                    Text(
+                      'Wind Speed: ${weather.windSpeed} kph',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    const SizedBox(height: 20),
+                    TextField(
+                      controller: _cityController,
+                      decoration: const InputDecoration(
+                        hintText: 'Enter city name',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _weather = widget.weatherInteractor.getWeather(_cityController.text);
+                        });
+                      },
+                      child: const Text('Get Weather'),
+                    ),
+                  ],
+                ),
               );
             }
           },
