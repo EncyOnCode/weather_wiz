@@ -9,4 +9,8 @@ class WeatherInteractor {
   Future<Weather> getWeather(String cityName) async {
     return await _repository.fetchWeather(cityName);
   }
+
+  Future<List<Weather>> getForecast(String cityName) async {
+    return await _repository.getWeatherForecast(cityName);
+  }
 }

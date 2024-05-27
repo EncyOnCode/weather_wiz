@@ -25,4 +25,22 @@ class WeatherApiRepository implements WeatherRepository {
       throw Exception('Failed to load weather data');
     }
   }
+
+  @override
+  Future<List<Weather>> getWeatherForecast(String cityName) async {
+    final url = 'https://api.weatherapi.com/v1/forecast.json?key=$apiKey&q=$cityName&days=7';
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      final List<dynamic> forecastList = data['forecast']['forecastday'];
+
+      return forecastList.map((forecast) {
+        return Weather.fromJson(forecast['day']);
+
+      }).toList();
+    }  else {
+      throw Exception('Failed to load weather forecast.');
+    }
+  }
 }
