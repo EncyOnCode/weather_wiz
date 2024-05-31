@@ -63,7 +63,7 @@ class _WeatherPageState extends State<WeatherPage> {
                     Text('Temperature: ${weather.temperature}°C'),
                     Text('Condition: ${weather.condition}'),
                     Image.network(_weatherIconUrl),
-                    Text('Wind speed: ${weather.windSpeed}'),
+                    Text('Wind speed: ${weather.windSpeed}kph'),
                     const SizedBox(
                       height: 20,
                     ),
