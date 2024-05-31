@@ -2,8 +2,14 @@
 
 An application about weather and dressing tips.
 
-## TO-DO list
+# Features
+- ### Useful weather information.
+- ### Weather forecast for the week.
+- ### Tips for each type of weather.
 
-- Integrate weather API
-- Implement tips on how to dress depending on the weather
+
+# TO-DO list
+
 - Refactor app design
+- Make a forecast work for every city
+- Refactor the clothing tips to make them more accurate.
