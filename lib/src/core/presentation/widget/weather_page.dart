@@ -8,6 +8,8 @@ import 'advisior_widget.dart';
 import '../../data/models/weather_forecast.dart';
 import '../../data/repo/weather_forecast_api_repo.dart';
 
+final TextEditingController _cityController = TextEditingController();
+
 class WeatherPage extends StatefulWidget {
   final WeatherInteractor weatherInteractor;
 
@@ -20,7 +22,6 @@ class WeatherPage extends StatefulWidget {
 class _WeatherPageState extends State<WeatherPage> {
   late Future<Weather> _weather;
   String _weatherIconUrl = 'https://';
-  final TextEditingController _cityController = TextEditingController();
   late final WeatherRepository weatherRepository;
 
   @override
@@ -39,9 +40,9 @@ class _WeatherPageState extends State<WeatherPage> {
         future: _weather,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
+            return Text('Error ${snapshot.error}');
           } else {
             final weather = snapshot.data!;
             _weatherIconUrl = 'https://${weather.icon.substring(2)}';
@@ -49,58 +50,55 @@ class _WeatherPageState extends State<WeatherPage> {
             if (kDebugMode) {
               print('Weather condition: ${weather.condition}');
             }
-            return Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'City: ${weather.cityName}',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  Text(
-                    'Temperature: ${weather.temperature}°C',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                  Text(
-                    'Condition: ${weather.condition}',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                  Image.network(_weatherIconUrl),
-                  Text(
-                    'Wind Speed: ${weather.windSpeed} kph',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                  const SizedBox(height: 20),
-                  TextField(
-                    controller: _cityController,
-                    decoration: const InputDecoration(
-                      hintText: 'Enter city name',
-                      border: OutlineInputBorder(),
+            return ListView(
+              padding: const EdgeInsets.all(20),
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'City: ${weather.cityName}',
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _weather = widget.weatherInteractor
-                            .getWeather(_cityController.text);
-                      });
-                    },
-                    child: const Text('Get Weather'),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  ClothingAdviceWidget(weather: weather),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  const Expanded(
-                    child: WeatherForecastPresenter(),
-                  ),
-                ],
-              ),
+                    Text('Temperature: ${weather.temperature}°C'),
+                    Text('Condition: ${weather.condition}'),
+                    Image.network(_weatherIconUrl),
+                    Text('Wind speed: ${weather.windSpeed}'),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    TextField(
+                      controller: _cityController,
+                      decoration: const InputDecoration(
+                        hintText: 'Enter city name',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(
+                          () {
+                            _weather = widget.weatherInteractor
+                                .getWeather(_cityController.text);
+                          },
+                        );
+                      },
+                      child: const Text('Get weather'),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    ClothingAdviceWidget(weather: weather),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    const WeatherForecastPresenter(),
+                  ],
+                ),
+              ],
             );
           }
         },
@@ -123,7 +121,7 @@ class _WeatherForecastPresenterState extends State<WeatherForecastPresenter> {
   @override
   void initState() {
     super.initState();
-    _forecastFuture = WeatherForecastRepository().fetchWeatherForecast();
+    _forecastFuture = WeatherForecastRepository().fetchWeatherForecast('Izhevsk');
   }
 
   @override
@@ -132,19 +130,24 @@ class _WeatherForecastPresenterState extends State<WeatherForecastPresenter> {
       future: _forecastFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const SizedBox(
-              width: 50, height: 50, child: CircularProgressIndicator());
+          return const CircularProgressIndicator();
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else {
           final forecasts = snapshot.data!.forecasts;
-          return ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: forecasts.length,
-            itemBuilder: (context, index) {
-              final forecast = forecasts[index];
-              return WeatherForecastCard(forecast: forecast);
-            },
+          return SizedBox(
+            height: 200,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: forecasts.length,
+              itemBuilder: (context, index) {
+                final forecast = forecasts[index];
+                return SizedBox(
+                  height: 60,
+                  child: WeatherForecastCard(forecast: forecast),
+                );
+              },
+            ),
           );
         }
       },
@@ -161,7 +164,7 @@ class WeatherForecastCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: 150,
-      height: 40,
+      height: 100,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(

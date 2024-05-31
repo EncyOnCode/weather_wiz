@@ -8,8 +8,8 @@ class WeatherForecastRepository {
   static const String apiKey = yourApiKey;
 
 
-  Future<WeatherForecast> fetchWeatherForecast() async {
-    String apiUrl = 'https://api.weatherapi.com/v1/forecast.json?key=$apiKey&q=Izhevsk&days=7&aqi=no&alerts=no';
+  Future<WeatherForecast> fetchWeatherForecast(String cityName) async {
+    String apiUrl = 'https://api.weatherapi.com/v1/forecast.json?key=$apiKey&q=$cityName&days=7&aqi=no&alerts=no';
     final response = await http.get(Uri.parse(apiUrl));
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
