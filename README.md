@@ -1,4 +1,4 @@
-# weather_project
+# Weather Wiz
 
 An application about weather and dressing tips.
 
