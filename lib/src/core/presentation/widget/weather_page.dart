@@ -35,14 +35,43 @@ class _WeatherPageState extends State<WeatherPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Weather Wiz'),
+        automaticallyImplyLeading: false
+        ,
       ),
       body: FutureBuilder<Weather>(
         future: _weather,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           } else if (snapshot.hasError) {
-            return Text('Error ${snapshot.error}');
+            return Center(
+              child: Column(
+                children: [
+                  const Text(
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontSize: 20,
+                    ),
+                    'Wrong city name',
+                  ),
+                  const SizedBox(height: 20,),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => WeatherPage(
+                              weatherInteractor: widget.weatherInteractor),
+                        ),
+                      );
+                    },
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            );
           } else {
             final weather = snapshot.data!;
             _weatherIconUrl = 'https://${weather.icon.substring(2)}';
@@ -121,7 +150,8 @@ class _WeatherForecastPresenterState extends State<WeatherForecastPresenter> {
   @override
   void initState() {
     super.initState();
-    _forecastFuture = WeatherForecastRepository().fetchWeatherForecast('Izhevsk');
+    _forecastFuture =
+        WeatherForecastRepository().fetchWeatherForecast('Izhevsk');
   }
 
   @override
